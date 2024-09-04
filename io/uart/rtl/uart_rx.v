@@ -70,7 +70,7 @@ module uart_rx (
 								end
 							end
 							default				: begin // データの受信
-								/* bug fix: do the right shift before receive sampling a new data */
+								/* bug fix: do the right shift before sampling a new data */
 								/* 4/09/2024, Morokami, summerrivers@qq.com */
 								rx_data <= #1 ra_data >> 1;
 								rx_data <= #1 {rx, rx_data[`BYTE_MSB:`LSB+1]};
