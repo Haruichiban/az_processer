@@ -1,81 +1,84 @@
 /*
  -- ============================================================================
  -- FILE NAME	: uart_rx.v
- -- DESCRIPTION : UARTóMƒ‚ƒWƒ…[ƒ‹
+ -- DESCRIPTION : UARTå—ä¿¡ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
  -- ----------------------------------------------------------------------------
  -- Revision  Date		  Coding_by	 Comment
- -- 1.0.0	  2011/06/27  suito		 V‹Kì¬
+ -- 1.0.0	  2011/06/27  suito		 æ–°è¦ä½œæˆ
  -- ============================================================================
 */
 
-/********** ‹¤’Êƒwƒbƒ_ƒtƒ@ƒCƒ‹ **********/
+/********** å…±é€šãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ« **********/
 `include "nettype.h"
 `include "stddef.h"
 `include "global_config.h"
 
-/********** ŒÂ•Êƒwƒbƒ_ƒtƒ@ƒCƒ‹ **********/
+/********** å€‹åˆ¥ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ« **********/
 `include "uart.h"
 
-/********** ƒ‚ƒWƒ…[ƒ‹ **********/
+/********** ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« **********/
 module uart_rx (
-	/********** ƒNƒƒbƒN & ƒŠƒZƒbƒg **********/
-	input  wire				   clk,		// ƒNƒƒbƒN
-	input  wire				   reset,	// ”ñ“¯ŠúƒŠƒZƒbƒg
-	/********** §ŒäM† **********/
-	output wire				   rx_busy, // óM’†ƒtƒ‰ƒO
-	output reg				   rx_end,	// óMŠ®—¹M†
-	output reg	[`ByteDataBus] rx_data, // óMƒf[ƒ^
-	/********** UARTóMM† **********/
-	input  wire				   rx		// UARTóMM†
+	/********** ã‚¯ãƒ­ãƒƒã‚¯ & ãƒªã‚»ãƒƒãƒˆ **********/
+	input  wire				   clk,		// ã‚¯ãƒ­ãƒƒã‚¯
+	input  wire				   reset,	// éåŒæœŸãƒªã‚»ãƒƒãƒˆ
+	/********** åˆ¶å¾¡ä¿¡å· **********/
+	output wire				   rx_busy, // å—ä¿¡ä¸­ãƒ•ãƒ©ã‚°
+	output reg				   rx_end,	// å—ä¿¡å®Œäº†ä¿¡å·
+	output reg	[`ByteDataBus] rx_data, // å—ä¿¡ãƒ‡ãƒ¼ã‚¿
+	/********** UARTå—ä¿¡ä¿¡å· **********/
+	input  wire				   rx		// UARTå—ä¿¡ä¿¡å·
 );
 
-	/********** “à•”ƒŒƒWƒXƒ^ **********/
-	reg [`UartStateBus]		   state;	 // ƒXƒe[ƒg
-	reg [`UartDivCntBus]	   div_cnt;	 // •ªüƒJƒEƒ“ƒ^
-	reg [`UartBitCntBus]	   bit_cnt;	 // ƒrƒbƒgƒJƒEƒ“ƒ^
+	/********** å†…éƒ¨ãƒ¬ã‚¸ã‚¹ã‚¿ **********/
+	reg [`UartStateBus]		   state;	 // ã‚¹ãƒ†ãƒ¼ãƒˆ
+	reg [`UartDivCntBus]	   div_cnt;	 // åˆ†å‘¨ã‚«ã‚¦ãƒ³ã‚¿
+	reg [`UartBitCntBus]	   bit_cnt;	 // ãƒ“ãƒƒãƒˆã‚«ã‚¦ãƒ³ã‚¿
 
-	/********** óM’†ƒtƒ‰ƒO‚Ì¶¬ **********/
+	/********** å—ä¿¡ä¸­ãƒ•ãƒ©ã‚°ã®ç”Ÿæˆ **********/
 	assign rx_busy = (state != `UART_STATE_IDLE) ? `ENABLE : `DISABLE;
 
-	/********** óM˜_— **********/
+	/********** å—ä¿¡è«–ç† **********/
 	always @(posedge clk or `RESET_EDGE reset) begin
 		if (reset == `RESET_ENABLE) begin
-			/* ”ñ“¯ŠúƒŠƒZƒbƒg */
+			/* éåŒæœŸãƒªã‚»ãƒƒãƒˆ */
 			rx_end	<= #1 `DISABLE;
 			rx_data <= #1 `BYTE_DATA_W'h0;
 			state	<= #1 `UART_STATE_IDLE;
 			div_cnt <= #1 `UART_DIV_RATE / 2;
 			bit_cnt <= #1 `UART_BIT_CNT_W'h0;
 		end else begin
-			/* óMƒXƒe[ƒg */
+			/* å—ä¿¡ã‚¹ãƒ†ãƒ¼ãƒˆ */
 			case (state)
-				`UART_STATE_IDLE : begin // ƒAƒCƒhƒ‹ó‘Ô
-					if (rx == `UART_START_BIT) begin // óMŠJn
+				`UART_STATE_IDLE : begin // ã‚¢ã‚¤ãƒ‰ãƒ«çŠ¶æ…‹
+					if (rx == `UART_START_BIT) begin // å—ä¿¡é–‹å§‹
 						state	<= #1 `UART_STATE_RX;
 					end
 					rx_end	<= #1 `DISABLE;
 				end
-				`UART_STATE_RX	 : begin // óM’†
-					/* ƒNƒƒbƒN•ªü‚É‚æ‚éƒ{[ƒŒ[ƒg’²® */
-					if (div_cnt == {`UART_DIV_CNT_W{1'b0}}) begin // –—¹
-						/* Ÿƒf[ƒ^‚ÌóM */
+				`UART_STATE_RX	 : begin // å—ä¿¡ä¸­
+					/* ã‚¯ãƒ­ãƒƒã‚¯åˆ†å‘¨ã«ã‚ˆã‚‹ãƒœãƒ¼ãƒ¬ãƒ¼ãƒˆèª¿æ•´ */
+					if (div_cnt == {`UART_DIV_CNT_W{1'b0}}) begin // æº€äº†
+						/* æ¬¡ãƒ‡ãƒ¼ã‚¿ã®å—ä¿¡ */
 						case (bit_cnt)
-							`UART_BIT_CNT_STOP	: begin // ƒXƒgƒbƒvƒrƒbƒg‚ÌóM
+							`UART_BIT_CNT_STOP	: begin // ã‚¹ãƒˆãƒƒãƒ—ãƒ“ãƒƒãƒˆã®å—ä¿¡
 								state	<= #1 `UART_STATE_IDLE;
 								bit_cnt <= #1 `UART_BIT_CNT_START;
 								div_cnt <= #1 `UART_DIV_RATE / 2;
-								/* ƒtƒŒ[ƒ~ƒ“ƒOƒGƒ‰[‚Ìƒ`ƒFƒbƒN */
+								/* ãƒ•ãƒ¬ãƒ¼ãƒŸãƒ³ã‚°ã‚¨ãƒ©ãƒ¼ã®ãƒã‚§ãƒƒã‚¯ */
 								if (rx == `UART_STOP_BIT) begin
 									rx_end	<= #1 `ENABLE;
 								end
 							end
-							default				: begin // ƒf[ƒ^‚ÌóM
+							default				: begin // ãƒ‡ãƒ¼ã‚¿ã®å—ä¿¡
+								/* bug fix: do the right shift before receive sampling a new data */
+								/* 4/09/2024, Morokami, summerrivers@qq.com */
+								rx_data <= #1 ra_data >> 1;
 								rx_data <= #1 {rx, rx_data[`BYTE_MSB:`LSB+1]};
 								bit_cnt <= #1 bit_cnt + 1'b1;
 								div_cnt <= #1 `UART_DIV_RATE;
 							end
 						endcase
-					end else begin // ƒJƒEƒ“ƒgƒ_ƒEƒ“
+					end else begin // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³
 						div_cnt <= #1 div_cnt - 1'b1;
 					end
 				end
