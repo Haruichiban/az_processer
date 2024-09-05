@@ -1,57 +1,57 @@
 /*
  -- ============================================================================
  -- FILE NAME	: uart_ctrl.v
- -- DESCRIPTION : UART§Œäƒ‚ƒWƒ…[ƒ‹
+ -- DESCRIPTION : UARTåˆ¶å¾¡ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
  -- ----------------------------------------------------------------------------
  -- Revision  Date		  Coding_by	 Comment
- -- 1.0.0	  2011/06/27  suito		 V‹Kì¬
+ -- 1.0.0	  2011/06/27  suito		 æ–°è¦ä½œæˆ
  -- ============================================================================
 */
 
-/********** ‹¤’Êƒwƒbƒ_ƒtƒ@ƒCƒ‹ **********/
+/********** å…±é€šãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ« **********/
 `include "nettype.h"
 `include "stddef.h"
 `include "global_config.h"
 
-/********** ŒÂ•Êƒwƒbƒ_ƒtƒ@ƒCƒ‹ **********/
+/********** å€‹åˆ¥ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ« **********/
 `include "uart.h"
 
-/********** ƒ‚ƒWƒ…[ƒ‹ **********/
+/********** ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« **********/
 module uart_ctrl (
-	/********** ƒNƒƒbƒN & ƒŠƒZƒbƒg **********/
-	input  wire				   clk,		 // ƒNƒƒbƒN
-	input  wire				   reset,	 // ”ñ“¯ŠúƒŠƒZƒbƒg
-	/********** ƒoƒXƒCƒ“ƒ^ƒtƒF[ƒX **********/
-	input  wire				   cs_,		 // ƒ`ƒbƒvƒZƒŒƒNƒg
-	input  wire				   as_,		 // ƒAƒhƒŒƒXƒXƒgƒ[ƒu
+	/********** ã‚¯ãƒ­ãƒƒã‚¯ & ãƒªã‚»ãƒƒãƒˆ **********/
+	input  wire				   clk,		 // ã‚¯ãƒ­ãƒƒã‚¯
+	input  wire				   reset,	 // éåŒæœŸãƒªã‚»ãƒƒãƒˆ
+	/********** ãƒã‚¹ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ãƒ¼ã‚¹ **********/
+	input  wire				   cs_,		 // ãƒãƒƒãƒ—ã‚»ãƒ¬ã‚¯ãƒˆ
+	input  wire				   as_,		 // ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚¹ãƒˆãƒ­ãƒ¼ãƒ–
 	input  wire				   rw,		 // Read / Write
-	input  wire [`UartAddrBus] addr,	 // ƒAƒhƒŒƒX
-	input  wire [`WordDataBus] wr_data,	 // ‘‚«‚İƒf[ƒ^
-	output reg	[`WordDataBus] rd_data,	 // “Ç‚İo‚µƒf[ƒ^
-	output reg				   rdy_,	 // ƒŒƒfƒB
-	/********** Š„‚è‚İ **********/
-	output reg				   irq_rx,	 // óMŠ®—¹Š„‚è‚İi§ŒäƒŒƒWƒXƒ^ 0j
-	output reg				   irq_tx,	 // ‘—MŠ®—¹Š„‚è‚İi§ŒäƒŒƒWƒXƒ^ 0j
-	/********** §ŒäM† **********/
-	// óM§Œä
-	input  wire				   rx_busy,	 // óM’†ƒtƒ‰ƒOi§ŒäƒŒƒWƒXƒ^ 0j
-	input  wire				   rx_end,	 // óMŠ®—¹M†
-	input  wire [`ByteDataBus] rx_data,	 // óMƒf[ƒ^
-	// ‘—M§Œä
-	input  wire				   tx_busy,	 // ‘—M’†ƒtƒ‰ƒOi§ŒäƒŒƒWƒXƒ^ 0j
-	input  wire				   tx_end,	 // ‘—MŠ®—¹M†
-	output reg				   tx_start, // ‘—MŠJnM†
-	output reg	[`ByteDataBus] tx_data	 // ‘—Mƒf[ƒ^
+	input  wire [`UartAddrBus] addr,	 // ã‚¢ãƒ‰ãƒ¬ã‚¹
+	input  wire [`WordDataBus] wr_data,	 // æ›¸ãè¾¼ã¿ãƒ‡ãƒ¼ã‚¿
+	output reg	[`WordDataBus] rd_data,	 // èª­ã¿å‡ºã—ãƒ‡ãƒ¼ã‚¿
+	output reg				   rdy_,	 // ãƒ¬ãƒ‡ã‚£
+	/********** å‰²ã‚Šè¾¼ã¿ **********/
+	output reg				   irq_rx,	 // å—ä¿¡å®Œäº†å‰²ã‚Šè¾¼ã¿ï¼ˆåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼‰
+	output reg				   irq_tx,	 // é€ä¿¡å®Œäº†å‰²ã‚Šè¾¼ã¿ï¼ˆåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼‰
+	/********** åˆ¶å¾¡ä¿¡å· **********/
+	// å—ä¿¡åˆ¶å¾¡
+	input  wire				   rx_busy,	 // å—ä¿¡ä¸­ãƒ•ãƒ©ã‚°ï¼ˆåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼‰
+	input  wire				   rx_end,	 // å—ä¿¡å®Œäº†ä¿¡å·
+	input  wire [`ByteDataBus] rx_data,	 // å—ä¿¡ãƒ‡ãƒ¼ã‚¿
+	// é€ä¿¡åˆ¶å¾¡
+	input  wire				   tx_busy,	 // é€ä¿¡ä¸­ãƒ•ãƒ©ã‚°ï¼ˆåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼‰
+	input  wire				   tx_end,	 // é€ä¿¡å®Œäº†ä¿¡å·
+	output reg				   tx_start, // é€ä¿¡é–‹å§‹ä¿¡å·
+	output reg	[`ByteDataBus] tx_data	 // é€ä¿¡ãƒ‡ãƒ¼ã‚¿
 );
 
-	/********** §ŒäƒŒƒWƒcƒ^ **********/
-	// §ŒäƒŒƒWƒXƒ^ 1 : ‘—óMƒf[ƒ^
-	reg [`ByteDataBus]		   rx_buf;	 // óMƒoƒbƒtƒ@
+	/********** åˆ¶å¾¡ãƒ¬ã‚¸ãƒ„ã‚¿ **********/
+	// åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 1 : é€å—ä¿¡ãƒ‡ãƒ¼ã‚¿
+	reg [`ByteDataBus]		   rx_buf;	 // å—ä¿¡ãƒãƒƒãƒ•ã‚¡
 
-	/********** UART§Œä˜_— **********/
+	/********** UARTåˆ¶å¾¡è«–ç† **********/
 	always @(posedge clk or `RESET_EDGE reset) begin
 		if (reset == `RESET_ENABLE) begin
-			/* ”ñ“¯ŠúƒŠƒZƒbƒg */
+			/* éåŒæœŸãƒªã‚»ãƒƒãƒˆ */
 			rd_data	 <= #1 `WORD_DATA_W'h0;
 			rdy_	 <= #1 `DISABLE_;
 			irq_rx	 <= #1 `DISABLE;
@@ -60,51 +60,55 @@ module uart_ctrl (
 			tx_start <= #1 `DISABLE;
 			tx_data	 <= #1 `BYTE_DATA_W'h0;
 	   end else begin
-			/* ƒŒƒfƒB‚Ì¶¬ */
+			/* ãƒ¬ãƒ‡ã‚£ã®ç”Ÿæˆ */
 			if ((cs_ == `ENABLE_) && (as_ == `ENABLE_)) begin
 				rdy_	 <= #1 `ENABLE_;
 			end else begin
 				rdy_	 <= #1 `DISABLE_;
 			end
-			/* “Ç‚İo‚µƒAƒNƒZƒX */
+			/* èª­ã¿å‡ºã—ã‚¢ã‚¯ã‚»ã‚¹ */
 			if ((cs_ == `ENABLE_) && (as_ == `ENABLE_) && (rw == `READ)) begin
 				case (addr)
-					`UART_ADDR_STATUS	 : begin // §ŒäƒŒƒWƒXƒ^ 0
+					`UART_ADDR_STATUS	 : begin // åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0
 						rd_data	 <= #1 {{`WORD_DATA_W-4{1'b0}}, 
 										tx_busy, rx_busy, irq_tx, irq_rx};
 					end
-					`UART_ADDR_DATA		 : begin // §ŒäƒŒƒWƒXƒ^ 1
-						rd_data	 <= #1 {{`BYTE_DATA_W*2{1'b0}}, rx_buf};
+					`UART_ADDR_DATA		 : begin // åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 1
+						/* bug fix: change the factor multiplied on 'BYTE_DATA_W' from 2 to 3 which 
+						 * is able to indicate the reserved bit in data register. 24 bit out of 32 bit
+						 * in total, so the factor should be 3 other than 2 */
+						/* 5/9/2024, Morokami, summerrivers@qq.com */
+						rd_data	 <= #1 {{`BYTE_DATA_W*3{1'b0}}, rx_buf};
 					end
 				endcase
 			end else begin
 				rd_data	 <= #1 `WORD_DATA_W'h0;
 			end
-			/* ‘‚«‚İƒAƒNƒZƒX */
-			// §ŒäƒŒƒWƒXƒ^ 0 : ‘—MŠ®—¹Š„‚è‚İ
+			/* æ›¸ãè¾¼ã¿ã‚¢ã‚¯ã‚»ã‚¹ */
+			// åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0 : é€ä¿¡å®Œäº†å‰²ã‚Šè¾¼ã¿
 			if (tx_end == `ENABLE) begin
 				irq_tx<= #1 `ENABLE;
 			end else if ((cs_ == `ENABLE_) && (as_ == `ENABLE_) && 
 						 (rw == `WRITE) && (addr == `UART_ADDR_STATUS)) begin
 				irq_tx<= #1 wr_data[`UartCtrlIrqTx];
 			end
-			// §ŒäƒŒƒWƒXƒ^ 0 : óMŠ®—¹Š„‚è‚İ
+			// åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0 : å—ä¿¡å®Œäº†å‰²ã‚Šè¾¼ã¿
 			if (rx_end == `ENABLE) begin
 				irq_rx<= #1 `ENABLE;
 			end else if ((cs_ == `ENABLE_) && (as_ == `ENABLE_) && 
 						 (rw == `WRITE) && (addr == `UART_ADDR_STATUS)) begin
 				irq_rx<= #1 wr_data[`UartCtrlIrqRx];
 			end
-			// §ŒäƒŒƒWƒXƒ^ 1
+			// åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 1
 			if ((cs_ == `ENABLE_) && (as_ == `ENABLE_) && 
-				(rw == `WRITE) && (addr == `UART_ADDR_DATA)) begin // ‘—MŠJn
+				(rw == `WRITE) && (addr == `UART_ADDR_DATA)) begin // é€ä¿¡é–‹å§‹
 				tx_start <= #1 `ENABLE;
 				tx_data	 <= #1 wr_data[`BYTE_MSB:`LSB];
 			end else begin
 				tx_start <= #1 `DISABLE;
 				tx_data	 <= #1 `BYTE_DATA_W'h0;
 			end
-			/* óMƒf[ƒ^‚Ìæ‚è‚İ */
+			/* å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã®å–ã‚Šè¾¼ã¿ */
 			if (rx_end == `ENABLE) begin
 				rx_buf	 <= #1 rx_data;
 			end
