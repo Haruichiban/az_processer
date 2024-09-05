@@ -76,7 +76,7 @@ module uart_ctrl (
 					`UART_ADDR_DATA		 : begin // 制御レジスタ 1
 						/* bug fix: change the factor multiplied on 'BYTE_DATA_W' from 2 to 3 which 
 						 * is able to indicate the reserved bit in data register. 24 bit out of 32 bit
-						 * in total, so the factor should be 3 other than 2 */
+						 * in total is indicating the reserved bit, so the factor should be 3 other than 2 */
 						/* 5/9/2024, Morokami, summerrivers@qq.com */
 						rd_data	 <= #1 {{`BYTE_DATA_W*3{1'b0}}, rx_buf};
 					end
