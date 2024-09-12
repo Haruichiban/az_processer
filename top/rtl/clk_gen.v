@@ -37,7 +37,7 @@ module clk_gen (
 	 * 'chip_reset' was able to be set while the clk output of dcm is stable, so
 	 * the logic of 'locked' should not be 'or'(||) but 'and'(&&) */
 	/* 12/9/2024, Morokami, summerrivers@qq.com */
-	assign chip_reset = ((reset_sw == `RESET_ENABLE) && (locked == `DISABLE)) ?
+	assign chip_reset = ((reset_sw == `RESET_ENABLE) && (locked == `ENABLE)) ?
 							`RESET_ENABLE : `RESET_DISABLE;
 
 	/********** Xilinx DCM (Digitl Clock Manager) **********/
