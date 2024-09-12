@@ -1,48 +1,52 @@
 /* 
  -- ============================================================================
  -- FILE NAME	: clk_gen.v
- -- DESCRIPTION : ƒNƒƒbƒN¶¬ƒ‚ƒWƒ…[ƒ‹
+ -- DESCRIPTION : ã‚¯ãƒ­ãƒƒã‚¯ç”Ÿæˆãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
  -- ----------------------------------------------------------------------------
  -- Revision  Date		  Coding_by	 Comment
- -- 1.0.0	  2011/06/27  suito		 V‹Kì¬
+ -- 1.0.0	  2011/06/27  suito		 æ–°è¦ä½œæˆ
  -- ============================================================================
 */
 
-/********** ‹¤’Êƒwƒbƒ_ƒtƒ@ƒCƒ‹ **********/
+/********** å…±é€šãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ« **********/
 `include "nettype.h"
 `include "stddef.h"
 `include "global_config.h"
 
-/********** ƒ‚ƒWƒ…[ƒ‹ **********/
+/********** ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« **********/
 module clk_gen (
-	/********** ƒNƒƒbƒN & ƒŠƒZƒbƒg **********/
-	input wire	clk_ref,   // Šî’êƒNƒƒbƒN
-	input wire	reset_sw,  // ƒŠƒZƒbƒgƒXƒCƒbƒ`
-	/********** ¶¬ƒNƒƒbƒN **********/
-	output wire clk,	   // ƒNƒƒbƒN
-	output wire clk_,	   // ”½“]ƒNƒƒbƒN
-	/********** ƒ`ƒbƒvƒŠƒZƒbƒg **********/
-	output wire chip_reset // ƒ`ƒbƒvƒŠƒZƒbƒg
+	/********** ã‚¯ãƒ­ãƒƒã‚¯ & ãƒªã‚»ãƒƒãƒˆ **********/
+	input wire	clk_ref,   // åŸºåº•ã‚¯ãƒ­ãƒƒã‚¯
+	input wire	reset_sw,  // ãƒªã‚»ãƒƒãƒˆã‚¹ã‚¤ãƒƒãƒ
+	/********** ç”Ÿæˆã‚¯ãƒ­ãƒƒã‚¯ **********/
+	output wire clk,	   // ã‚¯ãƒ­ãƒƒã‚¯
+	output wire clk_,	   // åè»¢ã‚¯ãƒ­ãƒƒã‚¯
+	/********** ãƒãƒƒãƒ—ãƒªã‚»ãƒƒãƒˆ **********/
+	output wire chip_reset // ãƒãƒƒãƒ—ãƒªã‚»ãƒƒãƒˆ
 );
 
-	/********** “à•”M† **********/
-	wire		locked;	   // ƒƒbƒN
-	wire		dcm_reset; // ƒŠƒZƒbƒg
+	/********** å†…éƒ¨ä¿¡å· **********/
+	wire		locked;	   // ãƒ­ãƒƒã‚¯
+	wire		dcm_reset; // ãƒªã‚»ãƒƒãƒˆ
 
-	/********** ƒŠƒZƒbƒg‚Ì¶¬ **********/
-	// DCMƒŠƒZƒbƒg
+	/********** ãƒªã‚»ãƒƒãƒˆã®ç”Ÿæˆ **********/
+	// DCMãƒªã‚»ãƒƒãƒˆ
 	assign dcm_reset  = (reset_sw == `RESET_ENABLE) ? `ENABLE : `DISABLE;
-	// ƒ`ƒbƒvƒŠƒZƒbƒg
-	assign chip_reset = ((reset_sw == `RESET_ENABLE) || (locked == `DISABLE)) ?
+	// ãƒãƒƒãƒ—ãƒªã‚»ãƒƒãƒˆ
+	/* bug fix: change the logic of setting the output reset signal 'chip_reset',
+	 * 'chip_reset' was able to be set while the clk output of dcm is stable, so
+	 * the logic of 'locked' should not be 'or'(||) but 'and'(&&) */
+	/* 12/9/2024, Morokami, summerrivers@qq.com */
+	assign chip_reset = ((reset_sw == `RESET_ENABLE) && (locked == `DISABLE)) ?
 							`RESET_ENABLE : `RESET_DISABLE;
 
 	/********** Xilinx DCM (Digitl Clock Manager) **********/
 	x_s3e_dcm x_s3e_dcm (
-		.CLKIN_IN		 (clk_ref),	  // Šî’êƒNƒƒbƒN
-		.RST_IN			 (dcm_reset), // DCMƒŠƒZƒbƒg
-		.CLK0_OUT		 (clk),		  // ƒNƒƒbƒN
-		.CLK180_OUT		 (clk_),	  // ”½“]ƒNƒƒbƒN
-		.LOCKED_OUT		 (locked)	  // ƒƒbƒN
+		.CLKIN_IN		 (clk_ref),	  // åŸºåº•ã‚¯ãƒ­ãƒƒã‚¯
+		.RST_IN			 (dcm_reset), // DCMãƒªã‚»ãƒƒãƒˆ
+		.CLK0_OUT		 (clk),		  // ã‚¯ãƒ­ãƒƒã‚¯
+		.CLK180_OUT		 (clk_),	  // åè»¢ã‚¯ãƒ­ãƒƒã‚¯
+		.LOCKED_OUT		 (locked)	  // ãƒ­ãƒƒã‚¯
    );
 
 endmodule
