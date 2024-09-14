@@ -71,9 +71,6 @@ module uart_rx (
 							end
 							default				: begin // データの受信
 								rx_data <= #1 {rx, rx_data[`BYTE_MSB:`LSB+1]};
-								/* bug fix: do the right shift after sampled a data for further sampling */
-								/* 4/09/2024, Morokami, summerrivers@qq.com */
-								rx_data <= #1 ra_data >> 1'b1;
 								bit_cnt <= #1 bit_cnt + 1'b1;
 								div_cnt <= #1 `UART_DIV_RATE;
 							end
